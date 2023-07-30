@@ -1,33 +1,38 @@
 import express from "express";
+import expressNunjucks from "express-nunjucks";
 import Database from "better-sqlite3";
 import createSqliteStore from "better-sqlite3-session-store";
 import session from "express-session";
 import * as dotenv from "dotenv";
 import { getError } from "./results.mjs";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Set up Express
 const app = express();
-dotenv.config();
 
-// app.use(express.static("public"));
-// app.use("/audio", express.static("audio"));
+// Gets NODE_ENV, which defaults to development.
+const isDev = app.get("env") === "development";
 
-const db = new Database(".data/app.db");
-db.pragma("journal_mode = WAL");
+app.set("views", __dirname + "/views");
+app.set("view engine", "njk");
 
-app.get("/", async (_, res) => {
-  try {
-    const result = {
-      Route: "/",
-    };
-    return res.json(result);
-  } catch (error) {
-    console.error(error);
-    return getError(error);
-  }
+const njk = expressNunjucks(app, {
+  watch: isDev,
+  noCache: isDev,
 });
 
-// const row = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
-// console.log(row.firstName, row.lastName, row.email);
+dotenv.config();
+
+app.use(express.static("public"));
+// app.use("/audio", express.static("audio"));
+
+// DB and Auth
+const db = new Database(".data/app.db");
+db.pragma("journal_mode = WAL");
 
 const SqliteStore = createSqliteStore(session);
 
@@ -41,10 +46,30 @@ app.use(
         intervalMs: 900000, //ms = 15min
       },
     }),
-    secret: "keyboard cat",
+    secret: process.env.SESSION_SECRET,
     resave: false,
   })
 );
+
+// const row = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
+// console.log(row.firstName, row.lastName, row.email);
+
+// Routes
+
+app.get("/", (_, res) => res.render("index"));
+app.get("/login", (_, res) => res.render("login"));
+
+app.get("/api", async (_, res) => {
+  try {
+    const result = {
+      Route: "/",
+    };
+    return res.json(result);
+  } catch (error) {
+    console.error(error);
+    return getError(error);
+  }
+});
 
 // listen for requests :)
 const listener = app.listen(process.env.PORT || 443, () => {
