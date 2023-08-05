@@ -1,15 +1,14 @@
 const getResult = (id, text) => {
   return {
-    status: "OK",
+    status: "NOTSET",
     text: text,
     id: id,
   };
 };
 
-export const getSuccess = (audioFileName, id, text, sdkResultId) => {
-  const resultModel = getResult(audioFileName, id, text);
+export const getSuccess = (id, text) => {
+  const resultModel = getResult(id, text);
   resultModel.status = "OK";
-  resultModel.speechId = sdkResultId;
   return resultModel;
 };
 

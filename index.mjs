@@ -7,6 +7,7 @@ import * as dotenv from "dotenv";
 import { getError } from "./results.mjs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { authenticateUser, createUser, userExists } from "./logic/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,9 +63,6 @@ app.use(
   })
 );
 
-// const row = db.prepare("SELECT * FROM users WHERE id = ?").get(userId);
-// console.log(row.firstName, row.lastName, row.email);
-
 // Routes
 
 app.get("/", (_, res) => res.render("index"));
@@ -85,8 +83,20 @@ app.get("/api", async (_, res) => {
 
 app.post("/api/register", async (req, res) => {
   console.log("Register", req.body);
+  const result = createUser(db, req.body);
+  console.log("Route result", result);
+  const response = result ? getSuccess() : getError();
 
-  return res.json(req.body);
+  return res.json(response);
+});
+
+app.post("/api/login", async (req, res) => {
+  console.log("Login", req.body);
+  const result = authenticateUser(db, req.body.username, req.body.password);
+  console.log("Route result", result);
+  const response = result ? getSuccess() : getError();
+
+  return res.json(response);
 });
 
 // listen for requests :)
