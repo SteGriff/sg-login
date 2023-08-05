@@ -1,4 +1,4 @@
-# sg-logim
+# sg-login
 
 I'm making a reusable boilerplate for myself to use as the basis for Express apps with authentication.
 
@@ -8,6 +8,8 @@ I'm making a reusable boilerplate for myself to use as the basis for Express app
 - Node 18
 - Nunjucks
 - Better-Sqlite3
+- Express Sessions
+- Try to do some best practices like salt and stuff
 
 ## Concepts
 
