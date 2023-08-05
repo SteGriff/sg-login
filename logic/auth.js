@@ -19,8 +19,11 @@ export const userExists = (db, username) => {
 
 export const authenticateUser = async (db, username, password) => {
   const user = getUser(db, username);
+
+  // If user doesn't exit, quit
   if (user === undefined) return false;
 
+  // Check passwords match
   const hashedInput = await pbkdf(
     password,
     user.Salt,
@@ -29,23 +32,24 @@ export const authenticateUser = async (db, username, password) => {
     ALGO
   );
 
-  console.log("DB PW", user.Password);
-  console.log("In PW", hashedInput);
-
   const result = await comparePasswords(user.Password, hashedInput);
 
+  console.log("DB PW", user.Password);
+  console.log("In PW", hashedInput);
   console.log("Result", result);
   return result;
 };
 
 export const createUser = async (db, userModel) => {
   const user = getUser(db, userModel.username);
-  if (user === undefined) return false;
+
+  // If user exists, quit
+  if (user !== undefined) return false;
 
   // No such user, let's create
   const salt = crypto.randomBytes(128).toString("base64");
   const hashedPassword = await pbkdf(
-    password,
+    userModel.password,
     salt,
     ITERATIONS,
     BITLENGTH,

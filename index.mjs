@@ -4,11 +4,10 @@ import Database from "better-sqlite3";
 import createSqliteStore from "better-sqlite3-session-store";
 import session from "express-session";
 import * as dotenv from "dotenv";
-import { getError } from "./results.mjs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { authenticateUser, createUser, userExists } from "./logic/auth.js";
-
+import { getSuccess, getError } from "./results.mjs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -83,7 +82,7 @@ app.get("/api", async (_, res) => {
 
 app.post("/api/register", async (req, res) => {
   console.log("Register", req.body);
-  const result = createUser(db, req.body);
+  const result = await createUser(db, req.body);
   console.log("Route result", result);
   const response = result ? getSuccess() : getError();
 
@@ -92,7 +91,11 @@ app.post("/api/register", async (req, res) => {
 
 app.post("/api/login", async (req, res) => {
   console.log("Login", req.body);
-  const result = authenticateUser(db, req.body.username, req.body.password);
+  const result = await authenticateUser(
+    db,
+    req.body.username,
+    req.body.password
+  );
   console.log("Route result", result);
   const response = result ? getSuccess() : getError();
 
