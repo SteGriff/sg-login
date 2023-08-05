@@ -14,6 +14,10 @@ const __dirname = path.dirname(__filename);
 // Set up Express
 const app = express();
 
+// Parse application/x-www-form-urlencoded and application/json
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 // Gets NODE_ENV, which defaults to development.
 const isDev = app.get("env") === "development";
 
@@ -48,6 +52,13 @@ app.use(
     }),
     secret: process.env.SESSION_SECRET,
     resave: false,
+    name: "sgnx",
+    cookie: {
+      httpOnly: true,
+      secure: !isDev,
+      sameSite: true,
+      maxAge: 600_000, // ms
+    },
   })
 );
 
@@ -58,6 +69,7 @@ app.use(
 
 app.get("/", (_, res) => res.render("index"));
 app.get("/login", (_, res) => res.render("login"));
+app.get("/register", (_, res) => res.render("register"));
 
 app.get("/api", async (_, res) => {
   try {
@@ -69,6 +81,12 @@ app.get("/api", async (_, res) => {
     console.error(error);
     return getError(error);
   }
+});
+
+app.post("/api/register", async (req, res) => {
+  console.log("Register", req.body);
+
+  return res.json(req.body);
 });
 
 // listen for requests :)

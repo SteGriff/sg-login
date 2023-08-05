@@ -6,7 +6,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "nodemon index.mjs",
+    "dev": "nodemon index.mjs",
+    "start": "node index.mjs",
+    "migrations": "node migrations.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ste Griffiths",
