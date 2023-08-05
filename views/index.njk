@@ -1,10 +1,14 @@
 {% extends "main.njk" %}
 {% block content %}
     <h1>Hello world</h1>
+    <p>Logged in User ID: {{ userId }}</p>
     <p>
         <a href="/login">Login</a>
     </p>
     <p>
         <a href="/register">Register</a>
     </p>
+    <form action="/api/logout" method="POST">
+        <button>Log out</button>
+    </form>
 {% endblock %}

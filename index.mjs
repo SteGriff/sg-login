@@ -64,9 +64,13 @@ app.use(
 
 // Routes
 
-app.get("/", (_, res) => res.render("index"));
-app.get("/login", (_, res) => res.render("login"));
-app.get("/register", (_, res) => res.render("register"));
+app.get("/", (req, res) => res.render("index", { userId: req.session.userId }));
+app.get("/login", (req, res) =>
+  res.render("login", { userId: req.session.userId })
+);
+app.get("/register", (req, res) =>
+  res.render("register", { userId: req.session.userId })
+);
 
 app.get("/api", async (_, res) => {
   try {
@@ -96,9 +100,16 @@ app.post("/api/login", async (req, res) => {
     req.body.username,
     req.body.password
   );
+  req.session.userId = result;
   console.log("Route result", result);
   const response = result ? getSuccess() : getError();
+  return res.json(response);
+});
 
+app.post("/api/logout", async (req, res) => {
+  console.log("Logout", req.body);
+  req.session.destroy();
+  const response = getSuccess();
   return res.json(response);
 });
 

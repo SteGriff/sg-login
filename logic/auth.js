@@ -1,16 +1,14 @@
 import { promisify } from "util";
 import * as crypto from "crypto";
 const pbkdf = promisify(crypto.pbkdf2);
-const comparePasswords = promisify(crypto.timingSafeEqual);
+const comparePasswords = crypto.timingSafeEqual;
 
 const ITERATIONS = 1000;
 const BITLENGTH = 128;
 const ALGO = "sha256";
 
 const getUser = (db, username) => {
-  const row = db
-    .prepare("SELECT * FROM [User] WHERE username = ?")
-    .get(username);
+  return db.prepare("SELECT * FROM [User] WHERE username = ?").get(username);
 };
 
 export const userExists = (db, username) => {
@@ -31,12 +29,9 @@ export const authenticateUser = async (db, username, password) => {
     BITLENGTH,
     ALGO
   );
+  const isMatch = comparePasswords(user.Password, hashedInput);
+  const result = isMatch ? user.ID : null;
 
-  const result = await comparePasswords(user.Password, hashedInput);
-
-  console.log("DB PW", user.Password);
-  console.log("In PW", hashedInput);
-  console.log("Result", result);
   return result;
 };
 
