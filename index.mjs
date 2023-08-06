@@ -6,7 +6,7 @@ import session from "express-session";
 import * as dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { authenticateUser, createUser, userExists } from "./logic/auth.js";
+import { authenticateUser, createUser, auth } from "./logic/auth.js";
 import { getSuccess, getError } from "./results.mjs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,24 +64,20 @@ app.use(
 
 // Routes
 
-app.get("/", (req, res) => res.render("index", { userId: req.session.userId }));
+app.get("/", (req, res) => res.render("index", { user: req.session.user }));
 app.get("/login", (req, res) =>
-  res.render("login", { userId: req.session.userId })
+  res.render("login", { user: req.session.user })
 );
 app.get("/register", (req, res) =>
-  res.render("register", { userId: req.session.userId })
+  res.render("register", { user: req.session.user })
 );
 
 app.get("/api", async (_, res) => {
-  try {
-    const result = {
-      Route: "/",
-    };
-    return res.json(result);
-  } catch (error) {
-    console.error(error);
-    return getError(error);
-  }
+  return res.json(getSuccess());
+});
+
+app.get("/api/whoami", auth, async (req, res) => {
+  return res.json(getSuccess(req.session.user));
 });
 
 app.post("/api/register", async (req, res) => {
@@ -95,14 +91,13 @@ app.post("/api/register", async (req, res) => {
 
 app.post("/api/login", async (req, res) => {
   console.log("Login", req.body);
-  const result = await authenticateUser(
+  const maskedUser = await authenticateUser(
     db,
     req.body.username,
     req.body.password
   );
-  req.session.userId = result;
-  console.log("Route result", result);
-  const response = result ? getSuccess() : getError();
+  req.session.user = maskedUser;
+  const response = maskedUser ? getSuccess(maskedUser) : getError();
   return res.json(response);
 });
 

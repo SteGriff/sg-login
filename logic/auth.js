@@ -1,5 +1,6 @@
 import { promisify } from "util";
 import * as crypto from "crypto";
+import { getError } from "../results.mjs";
 const pbkdf = promisify(crypto.pbkdf2);
 const comparePasswords = crypto.timingSafeEqual;
 
@@ -9,6 +10,26 @@ const ALGO = "sha256";
 
 const getUser = (db, username) => {
   return db.prepare("SELECT * FROM [User] WHERE username = ?").get(username);
+};
+
+const maskUser = (user) => {
+  return {
+    ID: user.ID,
+    Username: user.Username,
+    Email: user.Email,
+  };
+};
+
+// Middleware
+export const auth = (req, res, next) => {
+  if (req.session.user && req.session.user.ID) next();
+  else res.status(401).send(getError());
+};
+
+// Exports
+export const getUserData = (db, username) => {
+  const user = getUser(db, username);
+  return maskUser(user);
 };
 
 export const userExists = (db, username) => {
@@ -30,7 +51,7 @@ export const authenticateUser = async (db, username, password) => {
     ALGO
   );
   const isMatch = comparePasswords(user.Password, hashedInput);
-  const result = isMatch ? user.ID : null;
+  const result = isMatch ? maskUser(user) : null;
 
   return result;
 };
@@ -51,16 +72,11 @@ export const createUser = async (db, userModel) => {
     ALGO
   );
 
-  console.log("Create User", userModel);
-  console.log("Salt ", salt);
-  console.log("In PW", hashedPassword);
-
   const result = db
     .prepare(
       "insert into [User] (Username, Email, Password, Salt) values (?, ?, ?, ?)"
     )
     .run(userModel.username, userModel.email, hashedPassword, salt);
 
-  console.log("Result", result);
   return result;
 };

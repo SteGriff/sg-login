@@ -1,19 +1,18 @@
-const getResult = (id, text) => {
+const getResult = (model) => {
   return {
     status: "NOTSET",
-    text: text,
-    id: id,
+    model,
   };
 };
 
-export const getSuccess = (id, text) => {
-  const resultModel = getResult(id, text);
+export const getSuccess = (model) => {
+  const resultModel = getResult(model);
   resultModel.status = "OK";
   return resultModel;
 };
 
-export const getFailure = (id, text) => {
-  const resultModel = getResult(null, id, text);
+export const getFailure = (model) => {
+  const resultModel = getResult(model);
   resultModel.status = "Error";
   return resultModel;
 };
@@ -22,5 +21,6 @@ export const getError = (message) => {
   return {
     status: "Error",
     message: message,
+    model: null,
   };
 };
