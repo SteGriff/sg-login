@@ -62,41 +62,62 @@ app.use(
   })
 );
 
-// Routes
+// Reusable bits
 
-app.get("/", (req, res) => res.render("index", { user: req.session.user }));
-app.get("/login", (req, res) =>
-  res.render("login", { user: req.session.user })
-);
-app.get("/register", (req, res) =>
-  res.render("register", { user: req.session.user })
-);
-
-app.get("/api", async (_, res) => {
-  return res.json(getSuccess());
-});
-
-app.get("/api/whoami", auth, async (req, res) => {
-  return res.json(getSuccess(req.session.user));
-});
-
-app.post("/api/register", async (req, res) => {
-  console.log("Register", req.body);
-  const result = await createUser(db, req.body);
-  console.log("Route result", result);
-  const response = result ? getSuccess() : getError();
-
-  return res.json(response);
-});
-
-app.post("/api/login", async (req, res) => {
-  console.log("Login", req.body);
+const doLogin = async (req) => {
   const maskedUser = await authenticateUser(
     db,
     req.body.username,
     req.body.password
   );
   req.session.user = maskedUser;
+  return maskedUser;
+};
+
+const getModel = (req) => {
+  return { user: req.session?.user };
+};
+
+// Routes
+
+app.get("/", (req, res) => res.render("index", getModel(req)));
+
+app.get("/login", (req, res) => res.render("login", getModel(req)));
+app.post("/login", async (req, res) => {
+  const loginSucceeded = await doLogin(req);
+  console.log("Login?", loginSucceeded);
+  if (loginSucceeded) res.render("index", getModel(req));
+  else res.render("login", { loginFailed: true });
+});
+
+app.get("/register", (req, res) => res.render("register", getModel(req)));
+app.post("/register", async (req, res) => {
+  const registrationSucceeded = await createUser(db, req.body);
+  if (registrationSucceeded) res.render("index", getModel(req));
+  else res.render("register", { registrationFailed: true });
+});
+
+app.post("/logout", async (req, res) => {
+  req.session.destroy();
+  res.render("index", getModel(req));
+});
+
+app.get("/api", async (_, res) => {
+  return res.json(getSuccess());
+});
+
+app.get("/api/user", auth, async (req, res) => {
+  return res.json(getSuccess(req.session.user));
+});
+
+app.post("/api/register", async (req, res) => {
+  const result = await createUser(db, req.body);
+  const response = result ? getSuccess() : getError();
+  return res.json(response);
+});
+
+app.post("/api/login", async (req, res) => {
+  const maskedUser = doLogin(req);
   const response = maskedUser ? getSuccess(maskedUser) : getError();
   return res.json(response);
 });

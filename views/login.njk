@@ -2,12 +2,14 @@
 
 {% block content %}
     <h1>Login</h1>
-    <form action="/api/login" method="POST">
+    <form action="/login" method="POST">
         <label>Username:<input name="username" type="text" placeholder="Username"></label>
         <label>Password:<input name="password" type="password" placeholder="Password"></label>
         <button type="submit">Login</button>
     </form>
-    <p>Logged in User: {{ user.Username }}</p>
+    {% if loginFailed %}
+        <p>Wrong username/password! Try again.</p>
+    {% endif %}
     <p>
         <a href="/register">Register</a>
     </p>
