@@ -9,32 +9,32 @@
   </head>
   <body class="sans-serif">
     <header>
-      <div class="bg-black-90 dt pa3 w-100 center white">
-        <h1 class="dtc white f5 b">
-          <a class="white" href="/">App</a>
+      <div class="bg-black-90  pa3 w-100 flex white">
+        <h1 class=" white f5 b">
+          <a class="white no-underline" href="/">App</a>
         </h1>
         {% if user %}
-          <p class="dn dtc-ns white f6 pl1">
+          <p class="white f6 pl1">
             Hi {{ user.Username }}
           </p>
-          <form class="dtc f6" action="/logout" method="POST">
+          <form class="db mv2 ml-auto f6" action="/logout" method="POST">
             <button class="ba bw1 b--white bg-black w-90 white tc b pointer grow pa1 mh2">
                 Log out
               </button>
           </form>
         {% else %}
-          <p class="dtc f6">
+          <p class="ml-auto f6">
             <a
             href="/login"
-            class="ba bw1 b--white bg-black w-90 white tc b pointer grow pa1 mh2"
+            class="no-underline ba bw1 b--white bg-black w-90 white tc b pointer grow pa1 mh2"
           >
             Log in
           </a>
           </p>
-          <p class="dtc f6">
+          <p class=" f6">
             <a
             href="/register"
-            class="ba bw1 b--white bg-black w-90 white tc b pointer grow pa1 mh2"
+            class="no-underline ba bw1 b--white bg-black w-90 white tc b pointer grow pa1 mh2"
           >
             Register
           </a>

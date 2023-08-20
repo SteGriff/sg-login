@@ -16,6 +16,53 @@ I'm making a reusable boilerplate for myself to use as the basis for Express app
 - `npm run migrations` to run first time DB setup scripts
 - Server-side pages with progressive enhancement using petite-vue, generally.
 
+## Usage
+
+The base system provides the following pages:
+
+- Index (`/`)
+- Login (`/login`)
+- Register (`/register`)
+
+There are two usage styles:
+
+1.  POST-Redirect-GET (PRG)
+2.  JSON API
+
+### 1. PRG
+
+POST to the `/login`, `/logout`, or `/register` routes with Form Data (see example Login page). On success, you will be redirected to index with the Session User set. On failure, you'll stay on the page with either a `loginFailed` or `registrationFailed` flag set to true in the model bag.
+
+### 2. JSON
+
+POST with form data or JSON data to the `/api/login`, `/api/logout`, or `/api/register` endpoints with e.g. `{"username":"Ste","password":"Test"}`.
+
+```js
+await fetch("/api/login", {
+  method: "POST",
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ username: "Ste", password: "Test" }),
+});
+```
+
+Registration also accepts an `email` parameter.
+
+You will receive a JSON response like:
+
+```json
+{
+  "status": "OK",
+  "model": {
+    "ID": 1,
+    "Username": "Ste",
+    "Email": "ste@example.org"
+  }
+}
+```
+
 ## Data Schema
 
 ### Users

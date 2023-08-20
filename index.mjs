@@ -64,7 +64,7 @@ app.use(
 
 // Reusable bits
 
-const doLogin = async (req) => {
+const trySetSessionUser = async (req) => {
   const maskedUser = await authenticateUser(
     db,
     req.body.username,
@@ -82,24 +82,29 @@ const getModel = (req) => {
 
 app.get("/", (req, res) => res.render("index", getModel(req)));
 
-app.get("/login", (req, res) => res.render("login", getModel(req)));
+app.get("/login", (req, res) => {
+  if (req.session.user) res.redirect("/");
+  else res.render("login", getModel(req));
+});
 app.post("/login", async (req, res) => {
-  const loginSucceeded = await doLogin(req);
-  console.log("Login?", loginSucceeded);
-  if (loginSucceeded) res.render("index", getModel(req));
+  const loginSucceeded = await trySetSessionUser(req);
+  if (loginSucceeded) res.redirect("/");
   else res.render("login", { loginFailed: true });
 });
 
-app.get("/register", (req, res) => res.render("register", getModel(req)));
+app.get("/register", (req, res) => {
+  if (req.session.user) res.redirect("/");
+  else res.render("register", getModel(req));
+});
 app.post("/register", async (req, res) => {
   const registrationSucceeded = await createUser(db, req.body);
-  if (registrationSucceeded) res.render("index", getModel(req));
+  if (registrationSucceeded) res.redirect("/");
   else res.render("register", { registrationFailed: true });
 });
 
 app.post("/logout", async (req, res) => {
   req.session.destroy();
-  res.render("index", getModel(req));
+  res.redirect("/");
 });
 
 app.get("/api", async (_, res) => {
@@ -117,13 +122,12 @@ app.post("/api/register", async (req, res) => {
 });
 
 app.post("/api/login", async (req, res) => {
-  const maskedUser = doLogin(req);
+  const maskedUser = await trySetSessionUser(req);
   const response = maskedUser ? getSuccess(maskedUser) : getError();
   return res.json(response);
 });
 
 app.post("/api/logout", async (req, res) => {
-  console.log("Logout", req.body);
   req.session.destroy();
   const response = getSuccess();
   return res.json(response);
