@@ -34,10 +34,7 @@ export const getUserData = (db, username) => {
   return maskUser(user);
 };
 
-export const userExists = (db, username) => {
-  return getUser(db, username) !== undefined;
-};
-
+// Authenticate a user - returns masked user model or null
 export const authenticateUser = async (db, username, password) => {
   const user = getUser(db, username);
 
@@ -58,6 +55,7 @@ export const authenticateUser = async (db, username, password) => {
   return result;
 };
 
+// Create user - returns a common result type
 export const createUser = async (db, userModel) => {
   // Preconditions
   if (!userModel.username || !userModel.password)
@@ -69,8 +67,7 @@ export const createUser = async (db, userModel) => {
 
   // Test password strength
   const pwResult = zxcvbn(userModel.password);
-  if (pwResult.score < 3)
-    return getError("Password too weak: " + pwResult.feedback.suggestions);
+  if (pwResult.score < 3) return getError("Password too weak", pwResult);
 
   // No such user, let's create
   const salt = crypto.randomBytes(128).toString("base64");

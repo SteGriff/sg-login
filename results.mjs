@@ -17,11 +17,11 @@ export const getFailure = (model) => {
   return resultModel;
 };
 
-export const getError = (message) => {
+export const getError = (message, model = null) => {
   return {
     status: "Error",
     message: message,
-    model: null,
+    model,
   };
 };
 

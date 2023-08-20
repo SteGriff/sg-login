@@ -89,7 +89,7 @@ app.get("/login", (req, res) => {
 app.post("/login", async (req, res) => {
   const loginSucceeded = await trySetSessionUser(req);
   if (loginSucceeded) res.redirect("/");
-  else res.render("login", { loginFailed: true });
+  else res.render("login", getError("Wrong username/password."));
 });
 
 app.get("/register", (req, res) => {
@@ -98,8 +98,10 @@ app.get("/register", (req, res) => {
 });
 app.post("/register", async (req, res) => {
   const registrationResult = await createUser(db, req.body);
-  if (isSuccess(registrationResult)) res.redirect("/");
-  else res.render("register", registrationResult);
+  if (isSuccess(registrationResult)) {
+    await trySetSessionUser(req);
+    res.redirect("/");
+  } else res.render("register", registrationResult);
 });
 
 app.post("/logout", async (req, res) => {

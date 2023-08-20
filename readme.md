@@ -10,6 +10,7 @@ I'm making a reusable boilerplate for myself to use as the basis for Express app
 - Better-Sqlite3
 - Express Sessions
 - Try to do some best practices like salt and stuff
+- zxcvbn for password strength
 
 ## Concepts
 
@@ -31,7 +32,7 @@ There are two usage styles:
 
 ### 1. PRG
 
-POST to the `/login`, `/logout`, or `/register` routes with Form Data (see example Login page). On success, you will be redirected to index with the Session User set. On failure, you'll stay on the page with either a `loginFailed` or `registrationFailed` flag set to true in the model bag.
+POST to the `/login`, `/logout`, or `/register` routes with Form Data (see example Login page). On success, you will be redirected to index with the Session User set. On failure, you'll stay on the page and the model will be a common result type with a `status` and `message` or `model`.
 
 ### 2. JSON
 
@@ -48,7 +49,7 @@ await fetch("/api/login", {
 });
 ```
 
-Registration also accepts an `email` parameter.
+Registration also accepts an optional `email` parameter (make this mandatory if you want).
 
 You will receive a JSON response like:
 
@@ -62,6 +63,10 @@ You will receive a JSON response like:
   }
 }
 ```
+
+For failed registration, the response will have a `message` field, and the `model` field will be the complete result object from zxcvbn.
+
+Successful registration logs you in immediately.
 
 ## Data Schema
 
