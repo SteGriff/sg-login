@@ -9,6 +9,8 @@ const comparePasswords = crypto.timingSafeEqual;
 const ITERATIONS = 1000;
 const BITLENGTH = 128;
 const ALGO = "sha256";
+const GENERIC_ERROR = "Wrong username/password.";
+const LOCKED_OUT = "Sorry, this account is locked.";
 
 const getUser = (db, username) => {
   return db.prepare("SELECT * FROM [User] WHERE username = ?").get(username);
@@ -34,12 +36,15 @@ export const getUserData = (db, username) => {
   return maskUser(user);
 };
 
-// Authenticate a user - returns masked user model or null
+// Authenticate a user - returns common result type
 export const authenticateUser = async (db, username, password) => {
   const user = getUser(db, username);
 
   // If user doesn't exit, quit
-  if (user === undefined) return false;
+  if (user === undefined) return getError(GENERIC_ERROR);
+
+  // If user is locked out, quit
+  if (user.Active === 0) return getError(LOCKED_OUT);
 
   // Check passwords match
   const hashedInput = await pbkdf(
@@ -50,12 +55,10 @@ export const authenticateUser = async (db, username, password) => {
     ALGO
   );
   const isMatch = comparePasswords(user.Password, hashedInput);
-  const result = isMatch ? maskUser(user) : null;
-
-  return result;
+  return isMatch ? getSuccess(maskUser(user)) : getError(GENERIC_ERROR);
 };
 
-// Create user - returns a common result type
+// Create user - returns common result type
 export const createUser = async (db, userModel) => {
   // Preconditions
   if (!userModel.username || !userModel.password)

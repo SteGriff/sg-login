@@ -65,13 +65,13 @@ app.use(
 // Reusable bits
 
 const trySetSessionUser = async (req) => {
-  const maskedUser = await authenticateUser(
+  const result = await authenticateUser(
     db,
     req.body.username,
     req.body.password
   );
-  req.session.user = maskedUser;
-  return maskedUser;
+  req.session.user = result.model;
+  return result;
 };
 
 const getModel = (req) => {
@@ -87,9 +87,9 @@ app.get("/login", (req, res) => {
   else res.render("login", getModel(req));
 });
 app.post("/login", async (req, res) => {
-  const loginSucceeded = await trySetSessionUser(req);
-  if (loginSucceeded) res.redirect("/");
-  else res.render("login", getError("Wrong username/password."));
+  const loginResult = await trySetSessionUser(req);
+  if (isSuccess(loginResult)) res.redirect("/");
+  else res.render("login", loginResult);
 });
 
 app.get("/register", (req, res) => {
@@ -123,8 +123,7 @@ app.post("/api/register", async (req, res) => {
 });
 
 app.post("/api/login", async (req, res) => {
-  const maskedUser = await trySetSessionUser(req);
-  const response = maskedUser ? getSuccess(maskedUser) : getError();
+  const response = await trySetSessionUser(req);
   return res.json(response);
 });
 

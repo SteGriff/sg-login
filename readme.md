@@ -85,3 +85,9 @@ Each column in an SQLite 3 database is assigned one of the following type affini
 - BLOB
 
 <https://www.sqlite.org/datatype3.html>
+
+Download the SQLite CLI from: <https://sqlite.org/download.html>
+
+Look for 'sqlite-tools-win32'
+
+[SQLite CLI docs](https://sqlite.org/cli.html)
