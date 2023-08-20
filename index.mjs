@@ -6,8 +6,8 @@ import session from "express-session";
 import * as dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { authenticateUser, createUser, auth } from "./logic/auth.js";
-import { getSuccess, getError, isSuccess } from "./results.mjs";
+import { authenticateUser, createUser, auth } from "./logic/auth.mjs";
+import { getSuccess, isSuccess } from "./results.mjs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

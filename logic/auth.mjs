@@ -2,7 +2,7 @@ import { promisify } from "util";
 import * as crypto from "crypto";
 import zxcvbn from "zxcvbn";
 import { getError, getSuccess } from "../results.mjs";
-import { get } from "http";
+
 const pbkdf = promisify(crypto.pbkdf2);
 const comparePasswords = crypto.timingSafeEqual;
 

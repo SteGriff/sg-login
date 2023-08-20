@@ -1,4 +1,4 @@
-drop table [User];
+drop table if exists [User];
 
 create table [User]
 (
