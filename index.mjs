@@ -7,7 +7,7 @@ import * as dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import { authenticateUser, createUser, auth } from "./logic/auth.js";
-import { getSuccess, getError } from "./results.mjs";
+import { getSuccess, getError, isSuccess } from "./results.mjs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -97,9 +97,9 @@ app.get("/register", (req, res) => {
   else res.render("register", getModel(req));
 });
 app.post("/register", async (req, res) => {
-  const registrationSucceeded = await createUser(db, req.body);
-  if (registrationSucceeded) res.redirect("/");
-  else res.render("register", { registrationFailed: true });
+  const registrationResult = await createUser(db, req.body);
+  if (isSuccess(registrationResult)) res.redirect("/");
+  else res.render("register", registrationResult);
 });
 
 app.post("/logout", async (req, res) => {
@@ -116,8 +116,7 @@ app.get("/api/user", auth, async (req, res) => {
 });
 
 app.post("/api/register", async (req, res) => {
-  const result = await createUser(db, req.body);
-  const response = result ? getSuccess() : getError();
+  const response = await createUser(db, req.body);
   return res.json(response);
 });
 

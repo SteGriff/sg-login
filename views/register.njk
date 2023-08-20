@@ -8,4 +8,8 @@
         <label>Password:<input name="password" type="password" placeholder="Password"></label>
         <button type="submit">Register</button>
     </form>
+    {% if status %}
+        <p>{{status}}</p>
+        <p>{{model}}</p>
+    {% endif %}
 {% endblock %}

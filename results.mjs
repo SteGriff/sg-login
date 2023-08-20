@@ -24,3 +24,6 @@ export const getError = (message) => {
     model: null,
   };
 };
+
+export const isSuccess = (result) => result.status === "OK";
+export const isError = (result) => result.status !== "OK";

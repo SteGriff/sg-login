@@ -1,6 +1,8 @@
 import { promisify } from "util";
 import * as crypto from "crypto";
-import { getError } from "../results.mjs";
+import zxcvbn from "zxcvbn";
+import { getError, getSuccess } from "../results.mjs";
+import { get } from "http";
 const pbkdf = promisify(crypto.pbkdf2);
 const comparePasswords = crypto.timingSafeEqual;
 
@@ -57,10 +59,18 @@ export const authenticateUser = async (db, username, password) => {
 };
 
 export const createUser = async (db, userModel) => {
-  const user = getUser(db, userModel.username);
+  // Preconditions
+  if (!userModel.username || !userModel.password)
+    return getError("Missing username or password param");
 
   // If user exists, quit
-  if (user !== undefined) return false;
+  const user = getUser(db, userModel.username);
+  if (user !== undefined) return getError("User exists already.");
+
+  // Test password strength
+  const pwResult = zxcvbn(userModel.password);
+  if (pwResult.score < 3)
+    return getError("Password too weak: " + pwResult.feedback.suggestions);
 
   // No such user, let's create
   const salt = crypto.randomBytes(128).toString("base64");
@@ -72,11 +82,11 @@ export const createUser = async (db, userModel) => {
     ALGO
   );
 
-  const result = db
+  const dbResult = db
     .prepare(
       "insert into [User] (Username, Email, Password, Salt) values (?, ?, ?, ?)"
     )
     .run(userModel.username, userModel.email, hashedPassword, salt);
 
-  return result;
+  return getSuccess(dbResult);
 };
