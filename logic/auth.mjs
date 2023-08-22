@@ -2,6 +2,7 @@ import { promisify } from "util";
 import * as crypto from "crypto";
 import zxcvbn from "zxcvbn";
 import { getError, getSuccess } from "../results.mjs";
+import { EVT_LOGIN, EVT_REGISTER, writeLog } from "./logging.mjs";
 
 const pbkdf = promisify(crypto.pbkdf2);
 const comparePasswords = crypto.timingSafeEqual;
@@ -55,7 +56,11 @@ export const authenticateUser = async (db, username, password) => {
     ALGO
   );
   const isMatch = comparePasswords(user.Password, hashedInput);
-  return isMatch ? getSuccess(maskUser(user)) : getError(GENERIC_ERROR);
+
+  if (!isMatch) return getError(GENERIC_ERROR);
+
+  writeLog(db, EVT_LOGIN, user.Username, null);
+  return getSuccess(maskUser(user));
 };
 
 // Create user - returns common result type
@@ -87,6 +92,8 @@ export const createUser = async (db, userModel) => {
       "insert into [User] (Username, Email, Password, Salt) values (?, ?, ?, ?)"
     )
     .run(userModel.username, userModel.email, hashedPassword, salt);
+
+  writeLog(db, EVT_REGISTER, userModel.username, userModel.email);
 
   return getSuccess(dbResult);
 };
