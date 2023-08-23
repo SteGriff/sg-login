@@ -68,13 +68,13 @@ For failed registration, the response will have a `message` field, and the `mode
 
 Successful registration logs you in immediately.
 
-## Data Schema
+## Data
 
 ### Users
 
 Salt is 200 chars to accomodate 128 bytes to base64 (should be 172 chars)
 
-## Sqlite3
+### Sqlite3
 
 Each column in an SQLite 3 database is assigned one of the following type affinities:
 
@@ -91,3 +91,11 @@ Download the SQLite CLI from: <https://sqlite.org/download.html>
 Look for 'sqlite-tools-win32'
 
 [SQLite CLI docs](https://sqlite.org/cli.html)
+
+### Run SQL
+
+To run SQL migrations one-by-one or to run the inspections, use SQLite CLI, and, for example:
+
+```
+sqlite> .read sql/check-logs.sql
+```
