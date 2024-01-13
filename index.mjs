@@ -32,7 +32,6 @@ const njk = expressNunjucks(app, {
 dotenv.config();
 
 app.use(express.static("public"));
-// app.use("/audio", express.static("audio"));
 
 // DB and Auth
 const db = new Database(".data/app.db");
@@ -52,6 +51,7 @@ app.use(
     }),
     secret: process.env.SESSION_SECRET,
     resave: false,
+    saveUninitialized: false,
     name: "sgnx",
     cookie: {
       httpOnly: true,
@@ -109,6 +109,10 @@ app.post("/logout", async (req, res) => {
   res.redirect("/");
 });
 
+app.get("/apis", (req, res) => {
+  res.render("apis", getModel(req));
+});
+
 app.get("/api", async (_, res) => {
   return res.json(getSuccess());
 });
@@ -118,8 +122,10 @@ app.get("/api/user", auth, async (req, res) => {
 });
 
 app.post("/api/register", async (req, res) => {
-  const response = await createUser(db, req.body);
-  return res.json(response);
+  const registrationResult = await createUser(db, req.body);
+  if (isSuccess(registrationResult))
+    await trySetSessionUser(req);
+  return res.json(registrationResult);
 });
 
 app.post("/api/login", async (req, res) => {

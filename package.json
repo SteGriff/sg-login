@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "nodemon index.mjs",
     "start": "node index.mjs",
-    "migrations": "node migrations.mjs",
+    "migrations": "node ops/migrations.mjs",
+    "status": "node ops/status.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ste Griffiths",

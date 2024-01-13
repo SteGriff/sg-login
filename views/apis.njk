@@ -1,0 +1,86 @@
+{% extends "main.njk" %}
+{% block content %}
+  <h1>APIs</h1>
+
+  <p>Get User:</p>
+  <button type="button" onclick="me.getUser()">GET /api/user</button>
+
+  <p>Log out:</p>
+  <button type="button" onclick="me.logout()">POST /api/logout</button>
+
+  <p>Register/Log in:</p>
+  <form class="ba ph2 pb2">
+    <p>
+      <label>Username:<input type="text" name="username" class="js-username"></label>
+    </p>
+    <p>
+      <label>Password:<input type="password" name="password" class="js-password"></label>
+    </p>
+    <button type="submit" onclick="me.login(event)">POST /api/login</button>
+    <button type="button" onclick="me.register(event)">POST /api/register</button>
+  </form>
+
+  <h2>Result</h2>
+  <p>Status: <span class="js-status"></span></p>
+  <pre class="js-results"></pre>
+
+  <script>
+    app = function () {
+      this.getUser = async function () {
+        const response = await fetch("/api/user/");
+        this.print(response);
+      }
+      this.logout = async function () {
+        const response = await fetch("/api/logout/", {method: "POST"});
+        this.print(response);
+      }
+      this.login = async function (event) {
+        event.preventDefault();
+        const data = this.getCreds();
+        const response = await fetch("/api/login/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+        this.print(response);
+      }
+      this.register = async function (event) {
+        event.preventDefault();
+        const data = this.getCreds();
+        const response = await fetch("/api/register/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+        this.print(response);
+      }
+      this.getCreds = function () {
+        return {
+          "username": this
+            .$("js-username")
+            .value,
+          "password": this
+            .$("js-password")
+            .value
+        };
+      }
+      this.print = async function (response) {
+        const json = JSON.stringify(await response.json());
+        this
+          .$("js-results")
+          .innerHTML = json;
+        this
+          .$("js-status")
+          .innerHTML = response.status;
+      }
+      this.$ = function (c) {
+        return document.getElementsByClassName(c)[0];
+      }
+    };
+    const me = new app();
+  </script>
+{% endblock %}

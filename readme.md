@@ -68,6 +68,8 @@ For failed registration, the response will have a `message` field, and the `mode
 
 Successful registration logs you in immediately.
 
+Get the current user with `GET /api/user` which will either return the user model or a 401 error.
+
 ## Data
 
 ### Users
@@ -99,3 +101,11 @@ To run SQL migrations one-by-one or to run the inspections, use SQLite CLI, and,
 ```
 sqlite> .read sql/check-logs.sql
 ```
+
+### Operations (ops)
+
+We have some `mjs` files in `/ops` which run things:
+
+ + `npm run migrations` - runs `/ops/migrations.mjs` - sets up DB for first time;
+ + `npm run status` - run `/ops/status.mjs` - gets stats about extant data.
+ 
