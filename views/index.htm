@@ -1,0 +1,11 @@
+<h1>Hello world</h1>
+<p v-if="data?.user">You're logged in as {{data?.user?.Username}}</p>
+<div v-else>
+    <p>
+        <a href="/login">Login</a>
+    </p>
+    <p>
+        <a href="/register">Register</a>
+    </p>
+</div>
+<p><a href="/apis">Try APIs</a></p>

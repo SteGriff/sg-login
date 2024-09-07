@@ -12,7 +12,7 @@ console.log("Connect DB");
 const db = new Database(".data/app.db");
 db.pragma("journal_mode = WAL");
 
-const scriptRoot = "sql/";
+const scriptRoot = "../sql/";
 const scripts = ["create-table-user.sql", "create-table-logging.sql"];
 
 scripts.forEach(async (sf) => {

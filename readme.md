@@ -6,7 +6,6 @@ I'm making a reusable boilerplate for myself to use as the basis for Express app
 
 - ES Modules
 - Node 18
-- Nunjucks
 - Better-Sqlite3
 - Express Sessions
 - Try to do some best practices like salt and stuff

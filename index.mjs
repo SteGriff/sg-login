@@ -1,10 +1,10 @@
 import express from "express";
-import expressNunjucks from "express-nunjucks";
 import Database from "better-sqlite3";
 import createSqliteStore from "better-sqlite3-session-store";
 import session from "express-session";
 import * as dotenv from "dotenv";
 import path from "path";
+import { sste } from "./sste.js";
 import { fileURLToPath } from "url";
 import { authenticateUser, createUser, auth } from "./logic/auth.mjs";
 import { getSuccess, isSuccess } from "./results.mjs";
@@ -21,13 +21,10 @@ app.use(express.json());
 // Gets NODE_ENV, which defaults to development.
 const isDev = app.get("env") === "development";
 
-app.set("views", __dirname + "/views");
-app.set("view engine", "njk");
-
-const njk = expressNunjucks(app, {
-  watch: isDev,
-  noCache: isDev,
-});
+// Set the view engine to our custom engine
+app.engine('htm', sste);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'htm');
 
 dotenv.config();
 
@@ -141,5 +138,6 @@ app.post("/api/logout", async (req, res) => {
 
 // listen for requests :)
 const listener = app.listen(process.env.PORT || 443, () => {
-  console.log("Your app is listening on port " + listener.address().port);
+  console.log("Listening on port " + listener.address().port);
 });
+
