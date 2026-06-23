@@ -15,17 +15,14 @@
   "author": "Ste Griffiths",
   "license": "MIT",
   "dependencies": {
-    "better-sqlite3": "^8.5.0",
+    "better-sqlite3": "^12.11.1",
     "better-sqlite3-session-store": "^0.1.0",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "express-session": "^1.17.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
-  },
-  "engines": {
-    "node": "16.x"
+    "nodemon": "^3.1.14"
   }
 }
