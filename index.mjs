@@ -14,15 +14,14 @@ const __dirname = path.dirname(__filename);
 // Set up Express
 const app = express();
 
-// Trust first proxy (pass along session cookie)
-app.set('trust proxy', 1);
-
 // Parse application/x-www-form-urlencoded and application/json
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Gets NODE_ENV, which defaults to development.
+// Get NODE_ENV, which defaults to development
+// and trust first proxy (pass session cookie) in prod
 const isDev = app.get("env") === "development";
+if (!isDev) app.set('trust proxy', 1);
 
 // Set the view engine to our custom engine
 app.engine('htm', sste);
