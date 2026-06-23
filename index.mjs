@@ -14,6 +14,9 @@ const __dirname = path.dirname(__filename);
 // Set up Express
 const app = express();
 
+// Trust first proxy (pass along session cookie)
+app.set('trust proxy', 1);
+
 // Parse application/x-www-form-urlencoded and application/json
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
